@@ -1,5 +1,7 @@
 <script>
 import axios from 'axios';
+import findID from '@/components/content/modal/findID.vue';
+
 const { IMP } = window;  
 
 export default {
@@ -7,6 +9,7 @@ export default {
         return {
             activeTab: '아이디 찾기', // 현재 활성화된 탭
             imp_uid:'',
+            findUserId: null,
         };
     },
     methods: {
@@ -18,11 +21,12 @@ export default {
             {},
             function(rep){
               if(rep.success){
+                console.log(rep);
                 console.log("성공!");
                 this.imp_uid= rep.imp_uid;
 
                 // 서버에서 해당 유저 id 찾아주기
-                this.axios.get(`pass/certifications/${this.imp_uid}`,
+                axios.get(`http://192.168.5.10:8888/pass/certifications/${this.imp_uid}`,
                     { withCredentials: true }
                 )
                 .then(response => {
@@ -50,6 +54,9 @@ export default {
 </script>
 
 <template>
+    <div class="modal-overlay" v-if="findUserId">
+
+    </div>
     <div class="container">
         <header class="header">
             <svg class="header-icon" viewBox="0 0 24 24" fill="#2196f3">
@@ -89,6 +96,19 @@ export default {
 </template>
 
 <style scoped>
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 * {
     margin: 0;
     padding: 0;

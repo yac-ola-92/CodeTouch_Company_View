@@ -3,8 +3,7 @@ import App from './App.vue'
 import router from './router/router.js';
 import axiosInstance from './axios';
 
-app.config.globalProperties.$axios = axiosInstance;
-
 const app = createApp(App);
+app.config.globalProperties.$axios = axiosInstance;
 app.use(router);
 app.mount('#app');

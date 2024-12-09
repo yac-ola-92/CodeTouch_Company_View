@@ -20,11 +20,11 @@ export default {
         this.googleInit();
         
         const email = localStorage.getItem('email');
-        const pw = localStorage.getItem('pw');
+        const pw = localStorage.getItem('password');
 
-        if (email === !null){
+        if (email != null){
             this.email = email;
-            this.pw = this.decrypt(pw);
+            this.password = this.decrypt(pw);
             this.remember = true;
         }
     },
@@ -54,14 +54,26 @@ export default {
             this.validatePassword();
 
             if (!this.emailError && !this.passwordError) {
-                axios.get(`/`, 
+                const param = {
+                    "email": this.email,
+                    "password": this.password,
+                }
+
+                axios.post(`http://192.168.5.10:8888/고객/회원/로그인`, param,
                 { withCredentials: true })
                 .then(response => {
                     if(response.status == 200){
-                        console.log(response.data);
                         if(this.remember){
                             localStorage.setItem('email', this.email); 
-                            localStorage.setItem('pw', this.hashPassword(this.password));
+                            localStorage.setItem('password', this.hashPassword(this.password));
+                        }
+
+                        const token = response.headers['Authorization'] || response.headers['authorization'];
+
+                        if(token){
+                            const bearerToken = token.split(' ')[1];  //Bearer 부분 제거 후 토큰만 저장
+                            localStorage.setItem('AuthToken', bearerToken);
+                            this.$router.push('/'); //메인 페이지로 이동
                         }
                     }
                 })

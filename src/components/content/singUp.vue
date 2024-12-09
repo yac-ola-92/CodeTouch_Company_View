@@ -1,10 +1,15 @@
 <script>
+import axios from 'axios';
 const { IMP } = window;       
 
 export default {
   data() {
     return{
       imp_uid: null,
+      userName: '',
+      userPhone: '',
+      userBirth: '',
+      userGender: 0,
       verification: false,
       emailError: '',
       passwordError: '',
@@ -53,16 +58,26 @@ export default {
         return;
       }
 
-      this.$axios.post(`/`, 
-      {},
+      const requestData = {
+        email: this.email,
+        name: this.userName,
+        nickname: this.$refs.nickname.value,
+        password: this.password,
+        phone: this.userPhone,
+        birth: this.userBirth,
+        gender: this.userGender,
+      };
+
+      console.log(requestData);
+
+      axios.post(`http://192.168.5.10:8888/회사/회원/회원가입`, 
+      requestData,
       { withCredentials: true }
       )
             .then(response => {
-              console.log(response.data);
               if(response.status == 200){
                 this.$router.push('/login');
               }
-              
             })
             .catch(error => {
               console.error(error);
@@ -98,23 +113,25 @@ export default {
         certification(){
           IMP.certification(
             {},
-            function(rep){
+            (rep) => {
               if(rep.success){
-                console.log("성공!");
-                console.log(rep);
                 this.verification = true;
                 this.imp_uid= rep.imp_uid;
 
-                this.$axios.get(`/pass/certifications/${this.imp_uid}`, { withCredentials: true })
+                axios.get(`http://192.168.5.10:8888/패스/인증/${this.imp_uid}`, { withCredentials: true })
                 .then(response => {
-                  console.log(response.data);
+                  const user = response.data.data;
+                  this.userName = user.name;
+                  this.userPhone = user.phone;
+                  this.userBirth = user.birth;
+                  this.userGender = user.gender;
                 })
                 .catch(error => {
                   console.error(error);
                 });
               }
               else{
-                alert("실패!!" + rep.error_msg);
+                console.log("테스트 3");
               }
             }
           )
@@ -159,7 +176,7 @@ export default {
       <!-- 닉네임 -->
       <div class="mb-3">
         <div class="input-font">닉네임</div>
-        <input type="text" id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required>
+        <input type="text" ref="nickname" id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required>
       </div>
 
       <!-- 비밀번호 -->
@@ -205,11 +222,11 @@ export default {
       <div class="form-col is-verification" v-if="verification">
         <div class="mb-3">
           <div class="input-font">이름</div>
-          <input type="text" id="name" name="name" placeholder="이름을 입력하세요">
+          <input type="text" id="name" name="name" v-model="userName" placeholder="이름을 입력하세요">
         </div>
         <div class="mb-3">
           <div class="input-font">전화번호</div>
-          <input type="text" id="phone" name="phone" placeholder="번호를 입력하세요">
+          <input type="text" id="phone" name="phone" v-model="userPhone" placeholder="번호를 입력하세요">
         </div>
       </div>
 

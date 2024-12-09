@@ -1,4 +1,20 @@
-<script setup></script>
+<script>
+export default{
+  data() {
+        return {
+          showlogin: true,
+        };
+    },
+    mounted(){
+        const token = localStorage.getItem("AuthToken");
+        if(token){
+          this.showlogin = false;
+        }else{
+          this.showlogin = true;
+        }
+    },
+}
+</script>
 
 <template>
   <header class="header">
@@ -19,14 +35,14 @@
         </ul>
         <div class="auth-buttons">
 
-          <div class="login-container">
+          <div class="login-container" v-if="!showlogin">
             <div class="login-text">내 사이트</div>
             <div class="login-circle"></div>
           </div>
-          <router-link to="/login">
+          <router-link to="/login" v-if="showlogin">
             <button class="btn btn-outline">로그인</button>
           </router-link>
-        </div>
+          </div>
         
       </div>
     </nav>
