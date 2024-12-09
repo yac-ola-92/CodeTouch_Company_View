@@ -1,18 +1,31 @@
 <script>
+export default {
+    data(){
+        return{
+
+        }
+    },
+    props:{
+        findId: String,
+        createAt: String,
+    }
+}
 </script>
 <template>
     <div class="container">
-        <div class="success-icon">
-            <svg viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-            </svg>
+        <div class="success-icon-wrapper">
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                </svg>
+            </div>
+            <h1 class="title">가입된 아이디를 찾았어요</h1>
+            <p class="subtitle">가입된 정보가 맞다면 아래 계정으로 로그인하세요</p>
         </div>
-        <h1 class="title">가입된 아이디를 찾았어요</h1>
-        <p class="subtitle">가입된 정보가 맞다면 아래 계정으로 로그인하세요</p>
-        
+
         <div class="result-box">
-            <div class="email">mysk423@naver.com</div>
-            <div class="date">2024.11.28 가입</div>
+            <div class="email">{{ findId }}</div>
+            <div class="date">{{ createAt }}</div>
         </div>
 
         <div class="button-group">
@@ -22,6 +35,15 @@
     </div>
 </template>
 <style scoped>
+.success-icon-wrapper {
+    width: 100%; /* container와 동일한 너비 */
+    background-color: #fff; /* 흰색 박스 */
+    padding: 20px; /* 내부 여백 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
+    margin-bottom: 20px; /* 아래 콘텐츠와 간격 */
+}
+
         * {
             margin: 0;
             padding: 0;

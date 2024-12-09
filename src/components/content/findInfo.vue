@@ -5,12 +5,24 @@ import findID from '@/components/content/modal/findID.vue';
 const { IMP } = window;  
 
 export default {
+    components: {
+        findID,
+    },
     data() {
         return {
             activeTab: '아이디 찾기', // 현재 활성화된 탭
             imp_uid:'',
             findUserId: null,
         };
+    },
+    computed:{
+        viewModal(){
+            if (this.findUserId){
+                return true;
+            }else{
+                return false;
+            }
+        }
     },
     methods: {
         switchTab(tabName) {
@@ -26,11 +38,12 @@ export default {
                 this.imp_uid= rep.imp_uid;
 
                 // 서버에서 해당 유저 id 찾아주기
-                axios.get(`http://192.168.5.10:8888/pass/certifications/${this.imp_uid}`,
+                axios.get(`http://192.168.5.10:8888/패스/회원/아이디찾기/${this.imp_uid}`,
                     { withCredentials: true }
                 )
                 .then(response => {
                   console.log(response.data);
+                  this.findUserId = response.data.email;
                 })
                 .catch(error => {
                   console.error(error);
@@ -54,8 +67,8 @@ export default {
 </script>
 
 <template>
-    <div class="modal-overlay" v-if="findUserId">
-
+    <div class="modal-overlay" v-if="viewModal">
+        <findID :findId="findUserId"></findID>
     </div>
     <div class="container">
         <header class="header">
