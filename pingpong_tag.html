@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drag and Throw with Boundary</title>
+    <style>
+      .draggable {
+        width: 200px;
+        height: 100px;
+        background-color: lightblue;
+        text-align: center;
+        line-height: 100px;
+        border: solid 1px rgb(33, 102, 102);
+        position: absolute;
+        cursor: pointer;
+        margin: 10px;
+        user-select: none; /* 텍스트 선택 방지 */
+      }
+
+      .resizer {
+        width: 10px;
+        height: 10px;
+        background-color: gray;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        cursor: se-resize; /* 리사이즈 커서 */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="draggable" style="left: 50px; top: 50px">
+      Drag Me 1!
+      <div class="resizer"></div>
+    </div>
+    <div class="draggable" style="left: 300px; top: 50px">
+      Drag Me 2!
+      <div class="resizer"></div>
+    </div>
+    <div class="draggable" style="left: 550px; top: 50px">
+      Drag Me 3!
+      <div class="resizer"></div>
+    </div>
+
+    <script>
+      const draggables = document.querySelectorAll(".draggable");
+      draggables.forEach((draggable) => {
+        let isDragging = false;
+        let offsetX, offsetY;
+        let velocityX = 0,
+          velocityY = 0;
+        let lastX = 0,
+          lastY = 0;
+        let currentX = 0,
+          currentY = 0; // 현재 위치 추적
+        let animationFrame;
+
+        draggable.addEventListener("mousedown", (event) => {
+          isDragging = true;
+
+          // 현재 위치 초기화
+          const rect = draggable.getBoundingClientRect();
+          currentX = rect.left;
+          currentY = rect.top;
+
+          offsetX = event.clientX - rect.left;
+          offsetY = event.clientY - rect.top;
+
+          lastX = event.clientX;
+          lastY = event.clientY;
+
+          draggable.style.cursor = "grabbing";
+        });
+
+        document.addEventListener("mousemove", (event) => {
+          if (isDragging) {
+            const x = event.clientX - offsetX;
+            const y = event.clientY - offsetY;
+
+            velocityX = event.clientX - lastX;
+            velocityY = event.clientY - lastY;
+
+            lastX = event.clientX;
+            lastY = event.clientY;
+
+            currentX = x;
+            currentY = y;
+
+            draggable.style.left = `${currentX}px`;
+            draggable.style.top = `${currentY}px`;
+          }
+        });
+
+        document.addEventListener("mouseup", () => {
+          if (isDragging) {
+            isDragging = false;
+            draggable.style.cursor = "pointer";
+
+            // 관성 애니메이션 시작
+            applyInertia(draggable, velocityX, velocityY);
+          }
+        });
+
+        function applyInertia(element, vx, vy) {
+          const friction = 0.85; // 마찰 계수
+          const elementWidth = element.offsetWidth;
+          const elementHeight = element.offsetHeight;
+
+          function animate() {
+            vx *= friction;
+            vy *= friction;
+
+            currentX += vx;
+            currentY += vy;
+
+            // 브라우저 경계 확인 및 위치 제한
+            if (currentX < 0) {
+              currentX = 0;
+              vx = -vx * 0.5; // 반대 방향으로 반동
+            } else if (currentX + elementWidth > window.innerWidth) {
+              currentX = window.innerWidth - elementWidth;
+              vx = -vx * 0.5;
+            }
+
+            if (currentY < 0) {
+              currentY = 0;
+              vy = -vy * 0.5;
+            } else if (currentY + elementHeight > window.innerHeight) {
+              currentY = window.innerHeight - elementHeight;
+              vy = -vy * 0.5;
+            }
+
+            element.style.left = `${currentX}px`;
+            element.style.top = `${currentY}px`;
+
+            if (Math.abs(vx) > 0.1 || Math.abs(vy) > 0.1) {
+              animationFrame = requestAnimationFrame(animate);
+            } else {
+              cancelAnimationFrame(animationFrame);
+            }
+          }
+          animate();
+        }
+      });
+    </script>
+  </body>
+</html>
